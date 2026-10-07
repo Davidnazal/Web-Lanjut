@@ -4,8 +4,18 @@ import 'package:http/http.dart' as http;
 import '../models/sparepart.dart';
 
 class ApiService {
-  // Auto detect platform: Web/Desktop pakai 127.0.0.1, Emulator Android pakai 10.0.2.2
-  static String baseUrl = kIsWeb ? 'http://127.0.0.1:8000/api' : 'http://10.0.2.2:8000/api';
+  static String _getDefaultBaseUrl() {
+    if (kIsWeb) {
+      final host = Uri.base.host;
+      if (host != '127.0.0.1' && host != 'localhost' && host.isNotEmpty) {
+        return '${Uri.base.origin}/api';
+      }
+      return 'http://127.0.0.1:8000/api';
+    }
+    return 'http://10.0.2.2:8000/api';
+  }
+
+  static String baseUrl = _getDefaultBaseUrl();
 
   static Map<String, String> get _headers => {
         'Content-Type': 'application/json',
