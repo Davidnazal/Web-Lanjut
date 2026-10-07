@@ -148,13 +148,22 @@ class _CatalogScreenState extends State<CatalogScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.asset(
+                'assets/logo.png',
+                height: 32,
+                width: 32,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.build_rounded, color: AppTheme.primaryColor, size: 24),
+                ),
               ),
-              child: const Icon(Icons.two_wheeler, color: AppTheme.primaryColor, size: 24),
             ),
             const SizedBox(width: 10),
             const Text('MyParts', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
