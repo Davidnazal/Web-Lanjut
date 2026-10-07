@@ -14,9 +14,11 @@ if ($method === 'OPTIONS') {
 }
 
 // Database Connection (SQLite)
-$dbDir = __DIR__ . '/../database';
+$isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || (defined('PHP_OS_FAMILY') && PHP_OS_FAMILY !== 'Windows' && file_exists('/tmp'));
+$dbDir = $isVercel ? '/tmp' : __DIR__ . '/../database';
+
 if (!file_exists($dbDir)) {
-    mkdir($dbDir, 0777, true);
+    @mkdir($dbDir, 0777, true);
 }
 
 $dbPath = $dbDir . '/database.sqlite';
