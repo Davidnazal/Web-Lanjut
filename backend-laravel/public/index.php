@@ -4,7 +4,6 @@
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-header('Content-Type: application/json; charset=UTF-8');
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
@@ -12,6 +11,40 @@ if ($method === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
+
+// Router Parser
+$rawUri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$uri = rtrim($rawUri, '/');
+
+// Serve Static Flutter Web Files if requesting non-API routes or static assets
+$filePath = __DIR__ . $rawUri;
+if ($rawUri !== '/' && file_exists($filePath) && !is_dir($filePath) && strpos($rawUri, '/api/') !== 0) {
+    $mime = 'text/plain';
+    if (str_ends_with($filePath, '.html')) $mime = 'text/html';
+    else if (str_ends_with($filePath, '.js')) $mime = 'application/javascript';
+    else if (str_ends_with($filePath, '.json')) $mime = 'application/json';
+    else if (str_ends_with($filePath, '.css')) $mime = 'text/css';
+    else if (str_ends_with($filePath, '.png')) $mime = 'image/png';
+    else if (str_ends_with($filePath, '.webp')) $mime = 'image/webp';
+    else if (str_ends_with($filePath, '.jpg') || str_ends_with($filePath, '.jpeg')) $mime = 'image/jpeg';
+    
+    header('Content-Type: ' . $mime);
+    readfile($filePath);
+    exit();
+}
+
+// If user opens root domain in Browser, serve Flutter Web index.html!
+if ($rawUri === '/' || $rawUri === '/index.html' || $rawUri === '') {
+    $htmlPath = __DIR__ . '/index.html';
+    if (file_exists($htmlPath)) {
+        header('Content-Type: text/html; charset=UTF-8');
+        readfile($htmlPath);
+        exit();
+    }
+}
+
+// Set Content-Type for API JSON responses
+header('Content-Type: application/json; charset=UTF-8');
 
 // Database Connection (SQLite)
 $isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || (defined('PHP_OS_FAMILY') && PHP_OS_FAMILY !== 'Windows' && file_exists('/tmp'));
@@ -49,7 +82,7 @@ try {
         // Column already exists
     }
 
-    // Auto Seed ONLY if table is empty (Never delete existing user edits/items!)
+    // Auto Seed ONLY if table is empty
     $count = $pdo->query("SELECT COUNT(*) FROM spareparts")->fetchColumn();
     if ($count == 0) {
         $stmt = $pdo->prepare("INSERT INTO spareparts (part_name, brand, category, compatible_bike, price, stock, description, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
@@ -137,15 +170,6 @@ function sendJson($status, $message, $data = null, $code = 200, $errors = null) 
     if ($errors !== null) $res['errors'] = $errors;
     echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     exit();
-}
-
-// Router Parser
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/api/spareparts', PHP_URL_PATH);
-$uri = rtrim($uri, '/');
-
-// Auto redirect root / or /api to /api/spareparts
-if ($uri === '' || $uri === '/' || $uri === '/api') {
-    $uri = '/api/spareparts';
 }
 
 // Standardize route path
