@@ -141,9 +141,14 @@ function sendJson($status, $message, $data = null, $code = 200, $errors = null) 
 
 // Router Parser
 $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/api/spareparts', PHP_URL_PATH);
+$uri = rtrim($uri, '/');
+
+// Auto redirect root / or /api to /api/spareparts
+if ($uri === '' || $uri === '/' || $uri === '/api') {
+    $uri = '/api/spareparts';
+}
 
 // Standardize route path
-$uri = rtrim($uri, '/');
 if (strpos($uri, '/api/spareparts') !== 0) {
     sendJson('error', 'Endpoint API tidak ditemukan', null, 404);
 }
