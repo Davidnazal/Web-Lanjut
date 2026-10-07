@@ -3,25 +3,38 @@ import 'package:intl/intl.dart';
 import '../models/sparepart.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
-import 'detail_screen.dart';
-import 'form_screen.dart';
+import 'detail_page.dart';
+import 'form_page.dart';
 
-class CatalogScreen extends StatefulWidget {
-  const CatalogScreen({super.key});
+/// Halaman katalog utama [CatalogPage] yang menampilkan seluruh daftar sparepart,
+/// pencarian, filter kategori, serta opsi navigasi ke halaman detail & tambah data.
+class CatalogPage extends StatefulWidget {
+  const CatalogPage({super.key});
 
   @override
-  State<CatalogScreen> createState() => _CatalogScreenState();
+  State<CatalogPage> createState() => _CatalogPageState();
 }
 
-class _CatalogScreenState extends State<CatalogScreen> {
+class _CatalogPageState extends State<CatalogPage> {
+  /// Controller untuk input pencarian teks
   final TextEditingController _searchController = TextEditingController();
+
+  /// Formatter mata uang Rupiah (Rp X.XXX.XXX)
   final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
+  /// State daftar sparepart yang dimuat dari API
   List<Sparepart> _spareparts = [];
+
+  /// State indikator loading
   bool _isLoading = true;
+
+  /// State pesan error jaringan / API
   String? _errorMessage;
 
+  /// Kategori aktif yang dipilih pengguna
   String _selectedCategory = 'Semua';
+
+  /// Daftar pilihan kategori sparepart
   final List<String> _categories = ['Semua', 'Knalpot', 'Pengereman', 'Ban & Velg', 'Mesin', 'Aksesoris'];
 
   @override
@@ -30,6 +43,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
     _fetchData();
   }
 
+  /// Mengambil data sparepart dari API backend berdasarkan pencarian dan kategori aktif.
   Future<void> _fetchData() async {
     setState(() {
       _isLoading = true;
@@ -53,6 +67,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
     }
   }
 
+  /// Menampilkan dialog penyesuaian Base URL backend secara dinamis.
   void _showChangeBaseUrlDialog() {
     TextEditingController urlController = TextEditingController(text: ApiService.baseUrl);
 
@@ -105,6 +120,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
     );
   }
 
+  /// Menghapus item sparepart [part] setelah konfirmasi dialog.
   Future<void> _deleteItem(Sparepart part) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -179,7 +195,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       ),
       body: Column(
         children: [
-          // Search & Filters
+          // Input Teks Pencarian
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: TextField(
@@ -201,7 +217,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
           ),
 
-          // Category Chips
+          // Chips Filter Kategori
           SizedBox(
             height: 40,
             child: ListView.builder(
@@ -245,7 +261,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
           const SizedBox(height: 12),
 
-          // Catalog Items List
+          // Daftar Item Katalog Sparepart
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchData,
@@ -297,7 +313,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                       final updated = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => DetailScreen(sparepartId: item.id!),
+                                          builder: (context) => DetailPage(sparepartId: item.id!),
                                         ),
                                       );
                                       if (updated == true) _fetchData();
@@ -306,7 +322,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                       padding: const EdgeInsets.all(12.0),
                                       child: Row(
                                         children: [
-                                          // Thumbnail Container with Image.network fallback
+                                          // Kontainer Gambar Thumbnail
                                           Container(
                                             width: 75,
                                             height: 75,
@@ -339,7 +355,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                           ),
                                           const SizedBox(width: 14),
 
-                                          // Item Content
+                                          // Detail Teks Sparepart
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,7 +413,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                             ),
                                           ),
 
-                                          // Actions (Edit & Delete)
+                                          // Tombol Aksi Edit & Hapus
                                           Column(
                                             children: [
                                               IconButton(
@@ -406,7 +422,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                                   final updated = await Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => FormScreen(sparepart: item),
+                                                      builder: (context) => FormPage(sparepart: item),
                                                     ),
                                                   );
                                                   if (updated == true) _fetchData();
@@ -430,12 +446,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
         ],
       ),
 
-      // FAB: Add Sparepart
+      // Tombol Melayang Tambah Part Baru
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final created = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const FormScreen()),
+            MaterialPageRoute(builder: (context) => const FormPage()),
           );
           if (created == true) _fetchData();
         },
@@ -445,6 +461,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
     );
   }
 
+  /// Menentukan ikon visual berdasarkan kategori sparepart.
   IconData _getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
       case 'knalpot':

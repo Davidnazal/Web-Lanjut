@@ -3,22 +3,31 @@ import 'package:intl/intl.dart';
 import '../models/sparepart.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
-import 'form_screen.dart';
+import 'form_page.dart';
 
-class DetailScreen extends StatefulWidget {
+/// Halaman detail rincian produk [DetailPage] untuk melihat informasi lengkap
+/// spesifikasi sparepart, stok, serta opsi pengubahan/penghapusan data.
+class DetailPage extends StatefulWidget {
+  /// ID sparepart yang akan ditampilkan detailnya
   final int sparepartId;
 
-  const DetailScreen({super.key, required this.sparepartId});
+  const DetailPage({super.key, required this.sparepartId});
 
   @override
-  State<DetailScreen> createState() => _DetailScreenState();
+  State<DetailPage> createState() => _DetailPageState();
 }
 
-class _DetailScreenState extends State<DetailScreen> {
+class _DetailPageState extends State<DetailPage> {
+  /// Formatter mata uang Rupiah (Rp X.XXX.XXX)
   final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
+  /// Objek detail sparepart yang dimuat
   Sparepart? _sparepart;
+
+  /// Indikator loading data
   bool _isLoading = true;
+
+  /// Pesan error jika gagal memuat data dari API
   String? _errorMessage;
 
   @override
@@ -27,6 +36,7 @@ class _DetailScreenState extends State<DetailScreen> {
     _fetchDetail();
   }
 
+  /// Mengambil detail sparepart spesifik berdasarkan [widget.sparepartId].
   Future<void> _fetchDetail() async {
     setState(() {
       _isLoading = true;
@@ -47,6 +57,7 @@ class _DetailScreenState extends State<DetailScreen> {
     }
   }
 
+  /// Menghapus item sparepart yang sedang dibuka setelah konfirmasi dialog.
   Future<void> _deleteItem() async {
     if (_sparepart == null) return;
 
@@ -98,7 +109,7 @@ class _DetailScreenState extends State<DetailScreen> {
               onPressed: () async {
                 final updated = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormScreen(sparepart: _sparepart)),
+                  MaterialPageRoute(builder: (context) => FormPage(sparepart: _sparepart)),
                 );
                 if (updated == true) _fetchDetail();
               },
@@ -133,7 +144,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Product Hero Card Header with Network Image
+                          // Header Card Gambar / Hero Produk
                           Container(
                             height: 220,
                             width: double.infinity,
@@ -155,7 +166,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          // Title & Badges
+                          // Badge Kategori & Status Ketersediaan Stok
                           Row(
                             children: [
                               Container(
@@ -209,7 +220,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          // Specs Grid Card
+                          // Card Rincian Spesifikasi Sparepart
                           Card(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -231,7 +242,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           ),
                           const SizedBox(height: 16),
 
-                          // Description Card
+                          // Card Deskripsi Produk
                           Card(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -255,7 +266,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           ),
                           const SizedBox(height: 24),
 
-                          // Action Buttons
+                          // Tombol Aksi Edit & Hapus
                           Row(
                             children: [
                               Expanded(
@@ -268,7 +279,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                   onPressed: () async {
                                     final updated = await Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => FormScreen(sparepart: _sparepart)),
+                                      MaterialPageRoute(builder: (context) => FormPage(sparepart: _sparepart)),
                                     );
                                     if (updated == true) _fetchDetail();
                                   },
@@ -297,6 +308,7 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 
+  /// Helper untuk fallback tampilan visual saat gambar tidak tersedia
   Widget _buildIconFallback() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -315,6 +327,7 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 
+  /// Helper untuk merender baris item spesifikasi
   Widget _buildSpecRow(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
@@ -330,6 +343,7 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 
+  /// Helper untuk mendapatkan ikon kategori
   IconData _getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
       case 'knalpot':

@@ -20,6 +20,10 @@ frontend_flutter/.pub/
 frontend_flutter/android/.gradle/
 frontend_flutter/android/local.properties
 
+# Local Guides & Notes
+PANDUAN_PENGUMPULAN_POIN_G.md
+*.md.local
+
 # IDE & OS
 .idea/
 .vscode/

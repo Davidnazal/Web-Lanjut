@@ -3,7 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/sparepart.dart';
 
+/// Layanan komunikasi HTTP Client [ApiService] untuk berinteraksi
+/// dengan endpoint REST API Backend Laravel.
 class ApiService {
+  /// Menentukan Base URL default secara otomatis berdasarkan platform runtime
+  /// (Web browser, emulator Android, atau server produksi).
   static String _getDefaultBaseUrl() {
     if (kIsWeb) {
       final host = Uri.base.host;
@@ -15,17 +19,23 @@ class ApiService {
     return 'http://10.0.2.2:8000/api';
   }
 
+  /// Base URL API backend yang aktif digunakan.
   static String baseUrl = _getDefaultBaseUrl();
 
+  /// Header standar untuk HTTP Request JSON.
   static Map<String, String> get _headers => {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       };
 
-  // GET: Fetch all spareparts (with optional search or category)
+  /// Mengambil daftar semua sparepart dari backend.
+  ///
+  /// Dapat menerima parameter opsional:
+  /// - [search]: Kata kunci pencarian (nama/brand/motor).
+  /// - [category]: Filter nama kategori sparepart.
   static Future<List<Sparepart>> getSpareparts({String? search, String? category}) async {
     Uri uri = Uri.parse('$baseUrl/spareparts');
-    
+
     Map<String, String> queryParams = {};
     if (search != null && search.isNotEmpty) queryParams['search'] = search;
     if (category != null && category.isNotEmpty && category != 'Semua') queryParams['category'] = category;
@@ -45,7 +55,7 @@ class ApiService {
     }
   }
 
-  // GET: Fetch single sparepart by ID
+  /// Mengambil detail satu sparepart berdasarkan [id].
   static Future<Sparepart> getSparepartById(int id) async {
     final response = await http.get(
       Uri.parse('$baseUrl/spareparts/$id'),
@@ -60,7 +70,7 @@ class ApiService {
     }
   }
 
-  // POST: Create new sparepart
+  /// Menambahkan data sparepart baru [part] ke backend.
   static Future<Sparepart> createSparepart(Sparepart part) async {
     final response = await http.post(
       Uri.parse('$baseUrl/spareparts'),
@@ -84,7 +94,7 @@ class ApiService {
     }
   }
 
-  // PUT: Update existing sparepart
+  /// Memperbarui data sparepart berdasarkan [id] dan objek [part].
   static Future<Sparepart> updateSparepart(int id, Sparepart part) async {
     final response = await http.put(
       Uri.parse('$baseUrl/spareparts/$id'),
@@ -108,7 +118,7 @@ class ApiService {
     }
   }
 
-  // DELETE: Remove sparepart
+  /// Menghapus sparepart berdasarkan [id].
   static Future<bool> deleteSparepart(int id) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/spareparts/$id'),

@@ -5,6 +5,8 @@ import '../models/sparepart.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 
+/// Formatter kustom [ThousandsSeparatorInputFormatter] untuk memformat input angka
+/// harga secara otomatis dengan pemisah titik ribuan (contoh: 1.500.000).
 class ThousandsSeparatorInputFormatter extends TextInputFormatter {
   final NumberFormat _formatter = NumberFormat.decimalPattern('id');
 
@@ -32,16 +34,19 @@ class ThousandsSeparatorInputFormatter extends TextInputFormatter {
   }
 }
 
-class FormScreen extends StatefulWidget {
-  final Sparepart? sparepart; // If null = Add mode, If not null = Edit mode
+/// Halaman formulir [FormPage] untuk menambah data sparepart baru
+/// atau memperbarui data sparepart yang sudah ada (Edit mode).
+class FormPage extends StatefulWidget {
+  /// Objek sparepart jika dalam mode edit, null jika dalam mode tambah data baru.
+  final Sparepart? sparepart;
 
-  const FormScreen({super.key, this.sparepart});
+  const FormPage({super.key, this.sparepart});
 
   @override
-  State<FormScreen> createState() => _FormScreenState();
+  State<FormPage> createState() => _FormPageState();
 }
 
-class _FormScreenState extends State<FormScreen> {
+class _FormPageState extends State<FormPage> {
   final _formKey = GlobalKey<FormState>();
   final _numFormatter = NumberFormat.decimalPattern('id');
 
@@ -53,12 +58,19 @@ class _FormScreenState extends State<FormScreen> {
   late TextEditingController _descController;
   late TextEditingController _imageController;
 
+  /// Kategori aktif yang dipilih pada dropdown
   String _selectedCategory = 'Knalpot';
+
+  /// Daftar opsi pilihan kategori sparepart
   final List<String> _categories = ['Knalpot', 'Pengereman', 'Ban & Velg', 'Mesin', 'Aksesoris'];
 
+  /// State indikator penyimpanan data
   bool _isSaving = false;
+
+  /// State pesan error dari server backend
   String? _serverError;
 
+  /// Menentukan apakah formulir berada dalam mode Edit atau Tambah Baru.
   bool get isEdit => widget.sparepart != null;
 
   @override
@@ -91,6 +103,7 @@ class _FormScreenState extends State<FormScreen> {
     super.dispose();
   }
 
+  /// Mengonfirmasi validasi formulir dan mengunggah data sparepart ke backend API.
   Future<void> _saveData() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -178,7 +191,7 @@ class _FormScreenState extends State<FormScreen> {
                   ),
                 ),
 
-              // Part Name
+              // Input Nama Sparepart
               const Text('Nama Sparepart *', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
@@ -188,7 +201,7 @@ class _FormScreenState extends State<FormScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Brand & Category Row
+              // Baris Input Brand & Kategori
               Row(
                 children: [
                   Expanded(
@@ -229,7 +242,7 @@ class _FormScreenState extends State<FormScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Compatible Bike
+              // Input Kesesuaian Motor
               const Text('Kesesuaian Motor *', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
@@ -239,7 +252,7 @@ class _FormScreenState extends State<FormScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Price & Stock Row
+              // Baris Input Harga & Stok Unit
               Row(
                 children: [
                   Expanded(
@@ -291,7 +304,7 @@ class _FormScreenState extends State<FormScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Image URL Field
+              // Input URL Gambar Produk
               const Text('URL Gambar Produk (Optional)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
@@ -300,7 +313,7 @@ class _FormScreenState extends State<FormScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Description
+              // Input Deskripsi Spesifikasi
               const Text('Deskripsi Spesifikasi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
@@ -312,7 +325,7 @@ class _FormScreenState extends State<FormScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Submit Button
+              // Tombol Submit Formulir
               SizedBox(
                 width: double.infinity,
                 height: 50,
