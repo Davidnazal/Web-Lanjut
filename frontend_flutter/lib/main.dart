@@ -4,16 +4,16 @@ import 'theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const VixionModsApp());
+  runApp(const MyPartsApp());
 }
 
-class VixionModsApp extends StatelessWidget {
-  const VixionModsApp({Key? key}) : super(key: key);
+class MyPartsApp extends StatelessWidget {
+  const MyPartsApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'VixionMods Studio',
+      title: 'MyParts',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: const CatalogScreen(),

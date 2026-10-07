@@ -146,7 +146,7 @@ class _FormScreenState extends State<FormScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: Text(isEdit ? 'Edit Sparepart Vixion' : 'Tambah Sparepart Baru'),
+        title: Text(isEdit ? 'Edit Data Sparepart' : 'Tambah Sparepart Baru'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

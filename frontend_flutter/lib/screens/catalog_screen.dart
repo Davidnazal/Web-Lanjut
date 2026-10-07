@@ -157,13 +157,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
               child: const Icon(Icons.two_wheeler, color: AppTheme.primaryColor, size: 24),
             ),
             const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text('VixionMods Studio', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('Yamaha Vixion Old 2011 Catalog', style: TextStyle(fontSize: 11, color: AppTheme.textMuted)),
-              ],
-            ),
+            const Text('MyParts', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
